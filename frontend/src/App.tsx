@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 // Tipos TypeScript
+interface TopicData {
+  id: number;
+  text: string;
+  type: string;
+  keywords: string[];
+  concepts: string[];
+}
+
 interface EvaluationResult {
   score: number;
   wordCount: number;
@@ -38,13 +46,7 @@ interface EvaluationResult {
 interface TopicResponse {
   topic: string;
   topicId: number;
-  topicData: {
-    id: number;
-    text: string;
-    type: string;
-    keywords: string[];
-    concepts: string[];
-  };
+  topicData: TopicData;
   guidelines: {
     timeLimit: string;
     minWords: number;
@@ -56,9 +58,9 @@ interface TopicResponse {
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<'welcome' | 'writing' | 'results'>('welcome');
   const [topic, setTopic] = useState<string>('');
-  const [topicData, setTopicData] = useState<any>(null); // Nuevo: datos completos del tema
+  const [topicData, setTopicData] = useState<TopicData | null>(null); 
   const [essay, setEssay] = useState<string>('');
-  const [timeLeft, setTimeLeft] = useState<number>(30 * 60); // 30 minutos en segundos
+  const [timeLeft, setTimeLeft] = useState<number>(30 * 60); 
   const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -203,6 +205,9 @@ const App: React.FC = () => {
 
   // Pantalla de escritura
   if (currentScreen === 'writing') {
+    const progressPercentage = Math.min((wordCount / 250) * 100, 100);
+    const progressDegrees = (progressPercentage / 100) * 360;
+    
     return (
       <div className="app">
         <div className="writing-screen">
@@ -214,24 +219,37 @@ const App: React.FC = () => {
             </div>
             <div className="word-counter">
               <span className={`word-count ${wordCount < 250 ? 'insufficient' : 'sufficient'}`}>
-                📊 {wordCount} palabras
+                📝 {wordCount}/250 palabras
               </span>
+              <div 
+                className="progress-circle" 
+                style={{'--progress': `${progressDegrees}deg`} as React.CSSProperties}
+                data-percentage={`${Math.round(progressPercentage)}%`}
+              />
             </div>
           </div>
           
-          <div className="topic-section">
-            <h2>📋 Tema del ensayo:</h2>
-            <p className="topic-text">{topic}</p>
-          </div>
+          <div className="writing-content">
+            {timeLeft === 0 && (
+              <div className="time-up-message">
+                ⏰ ¡Se te acabó el tiempo! Suerte a la próxima. Puedes evaluar tu ensayo o intentar de nuevo.
+              </div>
+            )}
+            
+            <div className="topic-section">
+              <h2>TEMA:</h2>
+              <p className="topic-text">{topic}</p>
+            </div>
 
-          <div className="essay-section">
-            <textarea
-              className="essay-textarea"
-              placeholder="Escribe tu ensayo aquí..."
-              value={essay}
-              onChange={(e) => setEssay(e.target.value)}
-              disabled={timeLeft === 0}
-            />
+            <div className="essay-section">
+              <textarea
+                className="essay-textarea"
+                placeholder="Start typing here..."
+                value={essay}
+                onChange={(e) => setEssay(e.target.value)}
+                disabled={timeLeft === 0}
+              />
+            </div>
           </div>
 
           <div className="actions">
@@ -239,6 +257,7 @@ const App: React.FC = () => {
               className="evaluate-button"
               onClick={evaluateEssay}
               disabled={wordCount < 250 || isLoading}
+              title={wordCount < 250 ? "Requiere 250 palabras" : ""}
             >
               {isLoading ? '⏳ Evaluando...' : '✅ Evaluar Ensayo'}
             </button>
