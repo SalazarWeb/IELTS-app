@@ -4,13 +4,29 @@ import './App.css';
 // Tipos TypeScript
 interface EvaluationResult {
   score: number;
-  status: string;
-  feedback: string;
   wordCount: number;
+  detailedScores: {
+    taskAchievement: number;
+    coherenceCohesion: number;
+    lexicalResource: number;
+    grammaticalAccuracy: number;
+  };
+  feedback: {
+    general: string;
+    strengths: string[];
+    improvements: string[];
+  };
 }
 
-interface Topic {
+interface TopicResponse {
   topic: string;
+  topicId: number;
+  guidelines: {
+    timeLimit: string;
+    minWords: number;
+    recommendedWords: string;
+    taskType: string;
+  };
 }
 
 const App: React.FC = () => {
@@ -21,6 +37,7 @@ const App: React.FC = () => {
   const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   // Conteo de palabras en tiempo real
   const wordCount = essay.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -51,11 +68,18 @@ const App: React.FC = () => {
   // Obtener tema aleatorio
   const fetchTopic = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/get-topic');
-      const data: Topic = await response.json();
+      setError('');
+      const response = await fetch('http://localhost:5000/api/topic');
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data: TopicResponse = await response.json();
       setTopic(data.topic);
     } catch (error) {
       console.error('Error al obtener el tema:', error);
+      setError('Error al cargar el tema. Por favor, verifica que el servidor esté funcionando.');
       setTopic('Error al cargar el tema. Por favor, recarga la página.');
     }
   };
@@ -68,21 +92,32 @@ const App: React.FC = () => {
     }
 
     setIsLoading(true);
+    setError('');
+    
     try {
       const response = await fetch('http://localhost:5000/api/evaluate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ essay }),
+        body: JSON.stringify({ 
+          essay: essay,
+          topic: topic 
+        }),
       });
       
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
       const data: EvaluationResult = await response.json();
+      console.log('Resultado de evaluación:', data); // Para debugging
       setResult(data);
       setCurrentScreen('results');
       setIsTimerActive(false);
     } catch (error) {
       console.error('Error al evaluar el ensayo:', error);
+      setError('Error al evaluar el ensayo. Por favor, verifica que el servidor esté funcionando.');
       alert('Error al evaluar el ensayo. Por favor, intenta de nuevo.');
     } finally {
       setIsLoading(false);
@@ -115,12 +150,17 @@ const App: React.FC = () => {
         <div className="welcome-screen">
           <div className="welcome-card">
             <h1>🎓 Evaluador de Ensayos IELTS</h1>
+            {error && (
+              <div className="error-message" style={{color: 'red', margin: '10px 0'}}>
+                ⚠️ {error}
+              </div>
+            )}
             <div className="instructions">
               <h2>Instrucciones</h2>
               <ul>
                 <li>✏️ Tendrás <strong>20 minutos</strong> para escribir tu ensayo</li>
                 <li>📝 Mínimo <strong>150 palabras</strong> requeridas</li>
-                <li>🎯 Serás evaluado del <strong>en base a 5</strong></li>
+                <li>🎯 Serás evaluado<strong>en base a 5</strong></li>
                 <li>✅ Necesitas <strong>3 o más</strong> para aprobar</li>
               </ul>
             </div>
@@ -185,6 +225,8 @@ const App: React.FC = () => {
 
   // Pantalla de resultados
   if (currentScreen === 'results' && result) {
+    const status = result.score >= 3 ? 'Aprobado' : 'Necesita Mejorar';
+    
     return (
       <div className="app">
         <div className="results-screen">
@@ -192,12 +234,34 @@ const App: React.FC = () => {
             <h1>📊 Resultados de tu Ensayo</h1>
             
             <div className="score-section">
-              <div className={`score-display ${result.status === 'Aprobado' ? 'passed' : 'failed'}`}>
+              <div className={`score-display ${status === 'Aprobado' ? 'passed' : 'failed'}`}>
                 <span className="score-number">{result.score}</span>
                 <span className="score-total">/5</span>
               </div>
-              <div className={`status ${result.status === 'Aprobado' ? 'passed' : 'failed'}`}>
-                {result.status === 'Aprobado' ? '🎉' : '❌'} {result.status}
+              <div className={`status ${status === 'Aprobado' ? 'passed' : 'failed'}`}>
+                {status === 'Aprobado' ? '🎉' : '📚'} {status}
+              </div>
+            </div>
+
+            <div className="detailed-scores">
+              <h3>📋 Puntuaciones Detalladas:</h3>
+              <div className="criteria-grid">
+                <div className="criteria-item">
+                  <span>Task Achievement:</span>
+                  <span>{result.detailedScores.taskAchievement}/5</span>
+                </div>
+                <div className="criteria-item">
+                  <span>Coherence & Cohesion:</span>
+                  <span>{result.detailedScores.coherenceCohesion}/5</span>
+                </div>
+                <div className="criteria-item">
+                  <span>Lexical Resource:</span>
+                  <span>{result.detailedScores.lexicalResource}/5</span>
+                </div>
+                <div className="criteria-item">
+                  <span>Grammatical Accuracy:</span>
+                  <span>{result.detailedScores.grammaticalAccuracy}/5</span>
+                </div>
               </div>
             </div>
 
@@ -205,10 +269,33 @@ const App: React.FC = () => {
               <div className="detail-item">
                 <strong>📝 Palabras escritas:</strong> {result.wordCount}
               </div>
+              
               <div className="detail-item">
-                <strong>💬 Retroalimentación:</strong>
-                <p className="feedback">{result.feedback}</p>
+                <strong>💬 Feedback General:</strong>
+                <p className="feedback">{result.feedback.general}</p>
               </div>
+
+              {result.feedback.strengths.length > 0 && (
+                <div className="detail-item">
+                  <strong>✅ Fortalezas:</strong>
+                  <ul>
+                    {result.feedback.strengths.map((strength, index) => (
+                      <li key={index}>{strength}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {result.feedback.improvements.length > 0 && (
+                <div className="detail-item">
+                  <strong>📈 Áreas de Mejora:</strong>
+                  <ul>
+                    {result.feedback.improvements.map((improvement, index) => (
+                      <li key={index}>{improvement}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="actions">
@@ -217,6 +304,19 @@ const App: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si algo sale mal, mostrar mensaje de error
+  if (currentScreen === 'results' && !result) {
+    return (
+      <div className="app">
+        <div className="error-screen">
+          <h2>❌ Error</h2>
+          <p>No se pudieron cargar los resultados.</p>
+          <button onClick={resetTest}>🔄 Volver al Inicio</button>
         </div>
       </div>
     );

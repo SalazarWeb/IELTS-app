@@ -1,0 +1,173 @@
+{
+  "test_user_001": {
+    "userId": "test_user_001",
+    "createdAt": "2025-06-18T10:34:01.364Z",
+    "lastActive": "2025-06-18T10:34:01.364Z",
+    "essayHistory": [
+      {
+        "date": "2025-06-18T10:34:01.364Z",
+        "essayText": "Many people believe that technology has made our lives more complex rather than easier. In my opinion, while technology has introduced some complications, it has fundamentally made our lives significantly easier and more efficient.\n\nFirstly, technology has revolutionized communication and connectivity. In the past, people had to wait weeks or months to receive letters from distant relatives. Today, we can instantly communicate with anyone around the world through video calls, messaging apps, and social media platforms. For example, during the COVID-19 pandemic, technology enabled millions of people to work from home and maintain social connections, demonstrating its essential role in modern life.\n\nSecondly, technology has dramatically improved access to information and education. Previously, research required visiting libraries and spending hours searching through books and journals. Now, vast amounts of information are available at our fingertips through search engines and online databases. Students can access world-class education through online courses from prestigious universities, breaking down geographical and financial barriers to learning.\n\nHowever, critics argue that technology has created new problems such as digital addiction, privacy concerns, and social isolation. While these issues are valid, they represent challenges that society is learning to manage rather than fundamental flaws in technology itself. The benefits far outweigh the drawbacks when technology is used responsibly.\n\nIn conclusion, despite some complications, technology has undeniably made our lives easier by improving communication, enhancing access to information, and increasing overall efficiency. The key is learning to use technology wisely rather than rejecting its tremendous benefits.",
+        "topic": "Some people believe that technology has made our lives more complex, while others think it has made our lives easier. To what extent do you agree or disagree with this statement?",
+        "wordCount": 247,
+        "evaluation": {
+          "score": 3.7,
+          "status": "Aprobado",
+          "wordCount": 249,
+          "detailedScores": {
+            "taskAchievement": 5,
+            "coherenceCohesion": 3.1,
+            "lexicalResource": 3.3,
+            "grammaticalAccuracy": 3.4
+          },
+          "feedback": {
+            "overall": "Tu ensayo obtuvo una puntuación de 3.7/5.0. Buen ensayo que cumple con los requisitos básicos de IELTS. Tu área más fuerte es Logro de la Tarea y tu área de mejora es Coherencia y Cohesión.",
+            "taskAchievement": "Excelente respuesta a la tarea. Abordas todas las partes de la pregunta con ideas relevantes y bien desarrolladas. Considera escribir al menos 250 palabras para desarrollar mejor tus ideas.",
+            "coherenceCohesion": "Buena organización general con uso adecuado de conectores. Usa más conectores para enlazar tus ideas (however, furthermore, therefore, etc.). Varía tus conectores para mostrar mayor rango académico.",
+            "lexicalResource": "Buen rango de vocabulario con algunos usos naturales.",
+            "grammaticalAccuracy": "Buen uso de la gramática con una mezcla de estructuras simples y complejas. Practica estructuras condicionales (If... would...).",
+            "recommendations": [
+              "Practica usando conectores académicos variados",
+              "Organiza cada párrafo con una idea principal clara",
+              "Usa referencias pronominales (this, these, such) para enlazar ideas",
+              "Escribe entre 280-320 palabras para tener espacio suficiente para desarrollar ideas"
+            ]
+          },
+          "analysis": {
+            "wordAnalysis": {
+              "totalWords": 249,
+              "uniqueWords": 163,
+              "lexicalDiversity": 0.6546184738955824,
+              "avgWordLength": 6.06,
+              "longWordsCount": 104,
+              "longWordRatio": 0.418
+            },
+            "sentenceAnalysis": {
+              "totalSentences": 15,
+              "avgSentenceLength": 16.47,
+              "shortSentences": 1,
+              "mediumSentences": 11,
+              "longSentences": 3,
+              "sentenceVarietyScore": 0.301
+            },
+            "paragraphAnalysis": {
+              "totalParagraphs": 5,
+              "avgParagraphLength": 49.4,
+              "paragraphLengths": [
+                34,
+                68,
+                58,
+                50,
+                37
+              ],
+              "structureBalance": "Well balanced"
+            },
+            "vocabularyAnalysis": {
+              "academicConnectors": 1,
+              "formalVocabulary": 3,
+              "weakVocabulary": 0,
+              "vocabularySophistication": 1.87,
+              "wordRepetition": 27,
+              "mostRepeatedContent": [
+                [
+                  "people",
+                  3
+                ],
+                [
+                  "that",
+                  3
+                ],
+                [
+                  "technology",
+                  10
+                ],
+                [
+                  "has",
+                  7
+                ],
+                [
+                  "made",
+                  3
+                ]
+              ]
+            },
+            "coherenceAnalysis": {
+              "contrastConnectors": 1,
+              "additionConnectors": 0,
+              "causeEffectConnectors": 0,
+              "exampleConnectors": 1,
+              "transitionVariety": "Limited variety",
+              "pronounReference": {
+                "this": 0,
+                "that": 3,
+                "these": 1,
+                "those": 0,
+                "it": 1,
+                "they": 1,
+                "them": 0
+              }
+            },
+            "grammarAnalysis": {
+              "passiveVoice": 1,
+              "conditionalStructures": 0,
+              "relativeClauses": 3,
+              "gerunds": 14,
+              "modalVerbs": 2
+            },
+            "structureAnalysis": {
+              "structureType": "Standard essay structure",
+              "hasIntroduction": true,
+              "hasConclusion": true,
+              "bodyParagraphs": 3,
+              "introductionLength": 34,
+              "conclusionLength": 37
+            },
+            "topicRelevance": {
+              "relevanceScore": 0.619,
+              "keyTermsUsed": [
+                "some",
+                "people",
+                "believe",
+                "that",
+                "technology",
+                "made",
+                "lives",
+                "more",
+                "complex",
+                "while",
+                "made",
+                "lives",
+                "easier"
+              ],
+              "totalKeyTerms": 21,
+              "topicFocus": "High"
+            }
+          },
+          "evaluatedAt": "2025-06-18T10:34:01.363Z",
+          "topic": "Some people believe that technology has made our lives more complex, while others think it has made our lives easier. To what extent do you agree or disagree with this statement?"
+        },
+        "score": 3.7,
+        "detailedScores": {
+          "taskAchievement": 5,
+          "coherenceCohesion": 3.1,
+          "lexicalResource": 3.3,
+          "grammaticalAccuracy": 3.4
+        }
+      }
+    ],
+    "currentTopic": null,
+    "totalEssays": 1,
+    "averageScore": 3.7,
+    "bestScore": 3.7,
+    "preferences": {
+      "language": "es",
+      "notificationEnabled": true,
+      "preferredTopics": []
+    },
+    "statistics": {
+      "totalPracticeTime": 0,
+      "activeDays": 1,
+      "improvementAreas": [],
+      "strengths": []
+    }
+  }
+}

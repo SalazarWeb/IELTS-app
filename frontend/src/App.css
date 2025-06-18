@@ -53,7 +53,7 @@ body {
 
 .instructions ul {
   list-style: none;
-  space-between: 15px;
+  gap: 15px;
 }
 
 .instructions li {
