@@ -1,11 +1,11 @@
 # 🎓 Evaluador de Ensayos IELTS
 
-Una aplicación web completa para practicar y evaluar ensayos IELTS Task 2 con temporizador de 20 minutos y evaluación automática.
+Una aplicación web completa para practicar y evaluar ensayos IELTS Task 2 con temporizador de 30 minutos y evaluación automática.
 
 ## 🚀 Características
 
 - **Temas aleatorios**: 10 temas auténticos de IELTS Task 2
-- **Temporizador**: 20 minutos para completar el ensayo
+- **Temporizador**: 30 minutos para completar el ensayo
 - **Contador de palabras**: Mínimo 250 palabras requeridas
 - **Evaluación automática**: Puntuación del 0 al 5
 - **Retroalimentación**: Comentarios detallados sobre el ensayo
@@ -73,7 +73,7 @@ La aplicación se ejecutará en `http://localhost:5173`
 2. **Pantalla de Escritura**: 
    - Lee el tema asignado aleatoriamente
    - Escribe tu ensayo en el área de texto
-   - Observa el temporizador (20 minutos)
+   - Observa el temporizador (30 minutos)
    - Verifica el contador de palabras (mínimo 250)
    - Presiona "Evaluar Ensayo" cuando termines
 3. **Pantalla de Resultados**:

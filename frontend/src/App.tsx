@@ -58,7 +58,7 @@ const App: React.FC = () => {
   const [topic, setTopic] = useState<string>('');
   const [topicData, setTopicData] = useState<any>(null); // Nuevo: datos completos del tema
   const [essay, setEssay] = useState<string>('');
-  const [timeLeft, setTimeLeft] = useState<number>(20 * 60); // 20 minutos en segundos
+  const [timeLeft, setTimeLeft] = useState<number>(30 * 60); // 30 minutos en segundos
   const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -156,7 +156,7 @@ const App: React.FC = () => {
     await fetchTopic();
     setCurrentScreen('writing');
     setIsTimerActive(true);
-    setTimeLeft(20 * 60);
+    setTimeLeft(30 * 60);
     setEssay('');
   };
 
@@ -166,7 +166,7 @@ const App: React.FC = () => {
     setTopic('');
     setTopicData(null); // Limpiar datos del tema
     setEssay('');
-    setTimeLeft(20 * 60);
+    setTimeLeft(30 * 60);
     setIsTimerActive(false);
     setResult(null);
   };
@@ -186,7 +186,7 @@ const App: React.FC = () => {
             <div className="instructions">
               <h2>Instrucciones</h2>
               <ul>
-                <li>✏️ Tendrás <strong>20 minutos</strong> para escribir tu ensayo</li>
+                <li>✏️ Tendrás <strong>30 minutos</strong> para escribir tu ensayo</li>
                 <li>📝 Mínimo <strong>250 palabras</strong> requeridas</li>
                 <li>🎯 Serás evaluado<strong> en base a 5</strong></li>
                 <li>✅ Necesitas <strong>3 o más</strong> para aprobar</li>
