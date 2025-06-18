@@ -112,8 +112,8 @@ const App: React.FC = () => {
 
   // Evaluar ensayo
   const evaluateEssay = async () => {
-    if (wordCount < 150) {
-      alert('El ensayo debe tener al menos 150 palabras.');
+    if (wordCount < 250) {
+      alert('El ensayo debe tener al menos 250 palabras.');
       return;
     }
 
@@ -187,7 +187,7 @@ const App: React.FC = () => {
               <h2>Instrucciones</h2>
               <ul>
                 <li>✏️ Tendrás <strong>20 minutos</strong> para escribir tu ensayo</li>
-                <li>📝 Mínimo <strong>150 palabras</strong> requeridas</li>
+                <li>📝 Mínimo <strong>250 palabras</strong> requeridas</li>
                 <li>🎯 Serás evaluado<strong> en base a 5</strong></li>
                 <li>✅ Necesitas <strong>3 o más</strong> para aprobar</li>
               </ul>
@@ -213,7 +213,7 @@ const App: React.FC = () => {
               </span>
             </div>
             <div className="word-counter">
-              <span className={`word-count ${wordCount < 150 ? 'insufficient' : 'sufficient'}`}>
+              <span className={`word-count ${wordCount < 250 ? 'insufficient' : 'sufficient'}`}>
                 📊 {wordCount} palabras
               </span>
             </div>
@@ -238,7 +238,7 @@ const App: React.FC = () => {
             <button 
               className="evaluate-button"
               onClick={evaluateEssay}
-              disabled={wordCount < 150 || isLoading}
+              disabled={wordCount < 250 || isLoading}
             >
               {isLoading ? '⏳ Evaluando...' : '✅ Evaluar Ensayo'}
             </button>

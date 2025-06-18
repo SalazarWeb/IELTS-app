@@ -184,7 +184,7 @@ app.post('/api/evaluate', (req, res) => {
     if (wordCount < 50) {
       return res.status(400).json({ 
         error: 'El ensayo es demasiado corto',
-        message: 'Por favor escribe al menos 150 palabras para una evaluación adecuada'
+        message: 'Por favor escribe al menos 250 palabras para una evaluación adecuada'
       });
     }
 

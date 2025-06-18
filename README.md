@@ -6,7 +6,7 @@ Una aplicación web completa para practicar y evaluar ensayos IELTS Task 2 con t
 
 - **Temas aleatorios**: 10 temas auténticos de IELTS Task 2
 - **Temporizador**: 20 minutos para completar el ensayo
-- **Contador de palabras**: Mínimo 150 palabras requeridas
+- **Contador de palabras**: Mínimo 250 palabras requeridas
 - **Evaluación automática**: Puntuación del 0 al 5
 - **Retroalimentación**: Comentarios detallados sobre el ensayo
 - **Interfaz responsive**: Funciona en dispositivos móviles y desktop
@@ -74,7 +74,7 @@ La aplicación se ejecutará en `http://localhost:5173`
    - Lee el tema asignado aleatoriamente
    - Escribe tu ensayo en el área de texto
    - Observa el temporizador (20 minutos)
-   - Verifica el contador de palabras (mínimo 150)
+   - Verifica el contador de palabras (mínimo 250)
    - Presiona "Evaluar Ensayo" cuando termines
 3. **Pantalla de Resultados**:
    - Ve tu puntuación (0-5)
@@ -121,7 +121,7 @@ Verifica el estado del servidor.
 
 La evaluación actual es simulada y considera:
 
-- **Longitud**: Mínimo 150 palabras
+- **Longitud**: Mínimo 250 palabras
 - **Estructura**: Uso de conectores (however, furthermore, therefore)
 - **Conclusión**: Presencia de conclusión clara
 - **Complejidad**: Promedio de palabras por oración
