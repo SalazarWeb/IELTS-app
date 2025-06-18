@@ -78,8 +78,8 @@ class EssayBotAnalyzer {
     getBasicFeedback(wordCount, paragraphs) {
         let feedback = [];
         
-        if (wordCount < 250) {
-            feedback.push("⚠️ Tu ensayo tiene menos de 250 palabras. IELTS requiere mínimo 250 palabras.");
+        if (wordCount < 150) {
+            feedback.push("⚠️ Tu ensayo tiene menos de 150 palabras. IELTS requiere mínimo 150 palabras.");
         } else if (wordCount < 280) {
             feedback.push("📝 Tu ensayo cumple el mínimo de palabras, pero podrías expandirlo un poco más.");
         } else {

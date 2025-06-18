@@ -15,12 +15,36 @@ interface EvaluationResult {
     general: string;
     strengths: string[];
     improvements: string[];
+    topicSpecific?: {
+      relevanceLevel: string;
+      keywordsUsed: number;
+      keywordsPercentage: number;
+      conceptsCovered: number;
+      taskAlignment: string;
+      suggestions: string[];
+    };
+  };
+  topicAnalysis?: {
+    relevanceScore: number;
+    keywordsFound: string[];
+    conceptsCovered: string[];
+    topicFocus: string;
+    taskTypeAlignment: string;
+    keywordRatio: number;
+    conceptRatio: number;
   };
 }
 
 interface TopicResponse {
   topic: string;
   topicId: number;
+  topicData: {
+    id: number;
+    text: string;
+    type: string;
+    keywords: string[];
+    concepts: string[];
+  };
   guidelines: {
     timeLimit: string;
     minWords: number;
@@ -32,6 +56,7 @@ interface TopicResponse {
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<'welcome' | 'writing' | 'results'>('welcome');
   const [topic, setTopic] = useState<string>('');
+  const [topicData, setTopicData] = useState<any>(null); // Nuevo: datos completos del tema
   const [essay, setEssay] = useState<string>('');
   const [timeLeft, setTimeLeft] = useState<number>(20 * 60); // 20 minutos en segundos
   const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
@@ -77,6 +102,7 @@ const App: React.FC = () => {
       
       const data: TopicResponse = await response.json();
       setTopic(data.topic);
+      setTopicData(data.topicData); // Guardar datos completos del tema
     } catch (error) {
       console.error('Error al obtener el tema:', error);
       setError('Error al cargar el tema. Por favor, verifica que el servidor esté funcionando.');
@@ -102,7 +128,8 @@ const App: React.FC = () => {
         },
         body: JSON.stringify({ 
           essay: essay,
-          topic: topic 
+          topic: topic,
+          topicData: topicData // Enviar datos completos del tema para análisis
         }),
       });
       
@@ -137,6 +164,7 @@ const App: React.FC = () => {
   const resetTest = () => {
     setCurrentScreen('welcome');
     setTopic('');
+    setTopicData(null); // Limpiar datos del tema
     setEssay('');
     setTimeLeft(20 * 60);
     setIsTimerActive(false);
@@ -294,6 +322,25 @@ const App: React.FC = () => {
                       <li key={index}>{improvement}</li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {/* Nuevo: Análisis de tema */}
+              {result.topicAnalysis && (
+                <div className="topic-analysis">
+                  <h3>🔍 Análisis del Tema:</h3>
+                  <div className="analysis-item">
+                    <strong>Nivel de Relevancia:</strong> {result.topicAnalysis.relevanceScore}
+                  </div>
+                  <div className="analysis-item">
+                    <strong>Enfoque del Tema:</strong> {result.topicAnalysis.topicFocus}
+                  </div>
+                  <div className="analysis-item">
+                    <strong>Relación de Palabras Clave:</strong> {result.topicAnalysis.keywordRatio}
+                  </div>
+                  <div className="analysis-item">
+                    <strong>Relación de Conceptos:</strong> {result.topicAnalysis.conceptRatio}
+                  </div>
                 </div>
               )}
             </div>

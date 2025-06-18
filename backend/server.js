@@ -14,23 +14,78 @@ const ieltsEvaluator = new IELTSEvaluator();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Lista de temas IELTS Task 2
+// Lista de temas IELTS Task 2 con análisis de palabras clave
 const ieltsTopics = [
-  "Some people believe that technology has made our lives more complex, while others think it has made our lives easier. To what extent do you agree or disagree with this statement?",
-  "Many people think that universities should only offer practical subjects that prepare students for employment. To what extent do you agree or disagree?",
-  "Some experts believe that children should learn a foreign language from primary school rather than secondary school. Do the advantages of this outweigh the disadvantages?",
-  "In many countries, the number of elderly people is increasing rapidly. What problems might this cause and what solutions can you suggest?",
-  "Some people argue that governments should spend more money on public transportation than on roads for private vehicles. To what extent do you agree or disagree?",
-  "Many believe that social media has a negative impact on young people's mental health. Do you agree or disagree with this statement?",
-  "Some people think that homework is an important part of children's education, while others believe it is unnecessary. Discuss both views and give your opinion.",
-  "In some countries, online shopping is replacing shopping in stores. Do you think this is a positive or negative development?",
-  "Some people believe that climate change is the most important issue facing humanity today. To what extent do you agree or disagree?",
-  "Many argue that traditional newspapers will disappear in the future as people increasingly get their news online. Do you agree or disagree?",
-  "Some people think that famous people are treated unfairly by the media, and they should be given more privacy. To what extent do you agree or disagree?",
-  "In many countries, people are living longer than ever before. Some people say an ageing population creates problems for governments. Other people think there are benefits if society has more elderly people. To what extent do the advantages of having an ageing population outweigh the disadvantages?",
-  "Some people believe that it is best to accept a bad situation, such as an unsatisfactory job or shortage of money. Others argue that it is better to try and improve such situations. Discuss both these views and give your own opinion.",
-  "In the future, nobody will buy printed newspapers or books because they will be able to read everything they want online without paying. To what extent do you agree or disagree with this statement?",
-  "Some people say that the main environmental problem of our time is the loss of particular species of plants and animals. Others say that there are more important environmental problems. Discuss both these views and give your own opinion."
+  {
+    id: 0,
+    text: "Some people believe that technology has made our lives more complex, while others think it has made our lives easier. To what extent do you agree or disagree with this statement?",
+    type: "agree_disagree",
+    keywords: ["technology", "complex", "complicated", "easier", "simple", "digital", "devices", "smartphone", "computer", "internet", "automation", "convenience", "efficiency"],
+    concepts: ["modern life", "technological advancement", "complexity vs simplicity", "daily tasks", "communication", "work life"]
+  },
+  {
+    id: 1,
+    text: "Many people think that universities should only offer practical subjects that prepare students for employment. To what extent do you agree or disagree?",
+    type: "agree_disagree",
+    keywords: ["universities", "practical", "subjects", "employment", "job", "career", "skills", "theoretical", "academic", "education", "vocational", "training"],
+    concepts: ["higher education", "career preparation", "theoretical vs practical knowledge", "job market", "university curriculum"]
+  },
+  {
+    id: 2,
+    text: "Some experts believe that children should learn a foreign language from primary school rather than secondary school. Do the advantages of this outweigh the disadvantages?",
+    type: "advantages_disadvantages",
+    keywords: ["children", "foreign language", "primary school", "secondary school", "early age", "learning", "bilingual", "education", "advantages", "disadvantages"],
+    concepts: ["language acquisition", "early childhood education", "cognitive development", "educational timing", "multilingualism"]
+  },
+  {
+    id: 3,
+    text: "In many countries, the number of elderly people is increasing rapidly. What problems might this cause and what solutions can you suggest?",
+    type: "problem_solution",
+    keywords: ["elderly", "aging", "population", "problems", "solutions", "healthcare", "pension", "retirement", "care", "society", "demographic"],
+    concepts: ["aging population", "demographic change", "healthcare system", "social services", "economic impact", "intergenerational support"]
+  },
+  {
+    id: 4,
+    text: "Some people argue that governments should spend more money on public transportation than on roads for private vehicles. To what extent do you agree or disagree?",
+    type: "agree_disagree",
+    keywords: ["government", "spending", "public transportation", "roads", "private vehicles", "cars", "buses", "trains", "infrastructure", "traffic", "environment"],
+    concepts: ["public vs private transport", "government investment", "urban planning", "environmental impact", "traffic congestion"]
+  },
+  {
+    id: 5,
+    text: "Many believe that social media has a negative impact on young people's mental health. Do you agree or disagree with this statement?",
+    type: "agree_disagree",
+    keywords: ["social media", "negative impact", "young people", "mental health", "depression", "anxiety", "facebook", "instagram", "twitter", "online", "psychological"],
+    concepts: ["digital wellness", "youth psychology", "online behavior", "mental health issues", "social comparison", "cyberbullying"]
+  },
+  {
+    id: 6,
+    text: "Some people think that homework is an important part of children's education, while others believe it is unnecessary. Discuss both views and give your opinion.",
+    type: "discuss_both_views",
+    keywords: ["homework", "children", "education", "important", "unnecessary", "learning", "school", "academic", "practice", "stress", "family time"],
+    concepts: ["educational methods", "child development", "work-life balance", "academic achievement", "parental involvement"]
+  },
+  {
+    id: 7,
+    text: "In some countries, online shopping is replacing shopping in stores. Do you think this is a positive or negative development?",
+    type: "positive_negative",
+    keywords: ["online shopping", "e-commerce", "stores", "retail", "internet", "positive", "negative", "development", "convenience", "local business"],
+    concepts: ["digital commerce", "retail industry", "consumer behavior", "economic impact", "technological change"]
+  },
+  {
+    id: 8,
+    text: "Some people believe that climate change is the most important issue facing humanity today. To what extent do you agree or disagree?",
+    type: "agree_disagree",
+    keywords: ["climate change", "global warming", "environment", "humanity", "important", "issue", "carbon", "pollution", "sustainability", "future generations"],
+    concepts: ["environmental crisis", "global challenges", "sustainability", "environmental protection", "future of humanity"]
+  },
+  {
+    id: 9,
+    text: "Many argue that traditional newspapers will disappear in the future as people increasingly get their news online. Do you agree or disagree?",
+    type: "agree_disagree",
+    keywords: ["newspapers", "traditional", "disappear", "future", "online", "news", "digital", "media", "internet", "journalism", "information"],
+    concepts: ["media evolution", "digital transformation", "information consumption", "journalism industry", "technological disruption"]
+  }
 ];
 
 // Recursos y consejos IELTS
@@ -96,11 +151,12 @@ const ieltsResources = {
 app.get('/api/topic', (req, res) => {
   try {
     const randomIndex = Math.floor(Math.random() * ieltsTopics.length);
-    const topic = ieltsTopics[randomIndex];
+    const topicData = ieltsTopics[randomIndex];
     
     res.json({ 
-      topic,
+      topic: topicData.text, // Mantenemos compatibilidad con frontend
       topicId: randomIndex,
+      topicData: topicData, // Enviamos datos completos para evaluación
       guidelines: {
         timeLimit: "40 minutos",
         minWords: 250,
@@ -117,7 +173,7 @@ app.get('/api/topic', (req, res) => {
 // Evaluar ensayo (SIN guardar datos)
 app.post('/api/evaluate', (req, res) => {
   try {
-    const { essay, topic } = req.body;
+    const { essay, topic, topicData } = req.body; // Agregamos topicData
     
     if (!essay || typeof essay !== 'string') {
       return res.status(400).json({ error: 'El ensayo es requerido' });
@@ -132,8 +188,8 @@ app.post('/api/evaluate', (req, res) => {
       });
     }
 
-    // Evaluar ensayo (SIN userId - no guarda nada)
-    const evaluation = ieltsEvaluator.evaluateEssay(essay, topic);
+    // Evaluar ensayo CON datos del tema para análisis de relevancia
+    const evaluation = ieltsEvaluator.evaluateEssay(essay, topic, topicData);
 
     res.json({
       ...evaluation,
