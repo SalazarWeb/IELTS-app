@@ -1,10 +1,10 @@
-# 🎓 Evaluador de Ensayos IELTS
+# 🎓 IELTS Text writing test
 
-Una aplicación web completa para practicar y evaluar ensayos IELTS Task 2 con temporizador de 30 minutos y evaluación automática.
+Una aplicación web completa para practicar y evaluar ensayos IELTS Task con temporizador de 30 minutos y evaluación automática.
 
 ## 🚀 Características
 
-- **Temas aleatorios**: 10 temas auténticos de IELTS Task 2
+- **Temas aleatorios**: 10 temas auténticos de IELTS Task
 - **Temporizador**: 30 minutos para completar el ensayo
 - **Contador de palabras**: Mínimo 250 palabras requeridas
 - **Evaluación automática**: Puntuación del 0 al 5
@@ -36,7 +36,7 @@ Una aplicación web completa para practicar y evaluar ensayos IELTS Task 2 con t
 cd backend
 ```
 
-2. Instalar dependencias (ya instaladas):
+2. Instalar dependencias:
 ```bash
 npm install
 ```
@@ -55,7 +55,7 @@ El servidor se ejecutará en `http://localhost:5000`
 cd frontend
 ```
 
-2. Instalar dependencias (ya instaladas):
+2. Instalar dependencias:
 ```bash
 npm install
 ```
@@ -85,7 +85,7 @@ La aplicación se ejecutará en `http://localhost:5173`
 ## 🔧 API Endpoints
 
 ### GET /api/get-topic
-Obtiene un tema aleatorio de IELTS Task 2.
+Obtiene un tema aleatorio de IELTS Task.
 
 **Respuesta:**
 ```json

@@ -186,10 +186,10 @@ const App: React.FC = () => {
             <div className="instructions">
               <h2>Instrucciones</h2>
               <ul>
-                <li>✏️ Tendrás <strong>30 minutos</strong> para escribir tu ensayo</li>
-                <li>📝 Mínimo <strong>250 palabras</strong> requeridas</li>
+                <li>✏️ Tendrás<strong> 30 minutos</strong> para escribir un ensayo a partir de un<strong> tema aleatorio</strong></li>
+                <li>📝 Con un mínimo de<strong> 250 palabras</strong> requeridas</li>
                 <li>🎯 Serás evaluado<strong> en base a 5</strong></li>
-                <li>✅ Necesitas <strong>3 o más</strong> para aprobar</li>
+                <li>✅ Necesitas<strong> 3 o más</strong> para aprobar</li>
               </ul>
             </div>
             <button className="start-button" onClick={startTest}>

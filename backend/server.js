@@ -18,73 +18,73 @@ app.use(express.json({ limit: '10mb' }));
 const ieltsTopics = [
   {
     id: 0,
-    text: "Some people believe that technology has made our lives more complex, while others think it has made our lives easier. To what extent do you agree or disagree with this statement?",
-    type: "agree_disagree",
-    keywords: ["technology", "complex", "complicated", "easier", "simple", "digital", "devices", "smartphone", "computer", "internet", "automation", "convenience", "efficiency"],
-    concepts: ["modern life", "technological advancement", "complexity vs simplicity", "daily tasks", "communication", "work life"]
+    text: "Should schools replace human teachers with AI tutors? Discuss advantages, risks, and your stance.",
+    type: "discuss_both_views",
+    keywords: ["schools", "replace", "human teachers", "AI tutors", "artificial intelligence", "advantages", "risks", "education", "technology", "learning", "automation", "teaching"],
+    concepts: ["AI in education", "human vs artificial teaching", "educational technology", "teacher replacement", "learning outcomes", "digital transformation"]
   },
   {
     id: 1,
-    text: "Many people think that universities should only offer practical subjects that prepare students for employment. To what extent do you agree or disagree?",
+    text: "Tourism damages local cultures and environments. To what extent do you agree? Propose solutions.",
     type: "agree_disagree",
-    keywords: ["universities", "practical", "subjects", "employment", "job", "career", "skills", "theoretical", "academic", "education", "vocational", "training"],
-    concepts: ["higher education", "career preparation", "theoretical vs practical knowledge", "job market", "university curriculum"]
+    keywords: ["tourism", "damages", "local cultures", "environments", "sustainable", "solutions", "impact", "conservation", "heritage", "community", "ecology", "preservation"],
+    concepts: ["sustainable tourism", "cultural preservation", "environmental impact", "local communities", "tourism management", "heritage protection"]
   },
   {
     id: 2,
-    text: "Some experts believe that children should learn a foreign language from primary school rather than secondary school. Do the advantages of this outweigh the disadvantages?",
-    type: "advantages_disadvantages",
-    keywords: ["children", "foreign language", "primary school", "secondary school", "early age", "learning", "bilingual", "education", "advantages", "disadvantages"],
-    concepts: ["language acquisition", "early childhood education", "cognitive development", "educational timing", "multilingualism"]
+    text: "Analyze how Instagram and TikTok impact teenagers' self-esteem. Include personal examples.",
+    type: "problem_solution",
+    keywords: ["Instagram", "TikTok", "teenagers", "self-esteem", "social media", "impact", "mental health", "comparison", "influence", "youth", "psychology", "confidence"],
+    concepts: ["social media psychology", "teenage development", "digital influence", "self-image", "online behavior", "mental health"]
   },
   {
     id: 3,
-    text: "In many countries, the number of elderly people is increasing rapidly. What problems might this cause and what solutions can you suggest?",
-    type: "problem_solution",
-    keywords: ["elderly", "aging", "population", "problems", "solutions", "healthcare", "pension", "retirement", "care", "society", "demographic"],
-    concepts: ["aging population", "demographic change", "healthcare system", "social services", "economic impact", "intergenerational support"]
+    text: "Is remote work beneficial for work-life balance or does it isolate people? Support your view.",
+    type: "discuss_both_views",
+    keywords: ["remote work", "work-life balance", "isolate", "beneficial", "telecommuting", "home office", "productivity", "social interaction", "flexibility", "isolation"],
+    concepts: ["work flexibility", "social isolation", "work-life integration", "remote collaboration", "digital workplace", "employee wellbeing"]
   },
   {
     id: 4,
-    text: "Some people argue that governments should spend more money on public transportation than on roads for private vehicles. To what extent do you agree or disagree?",
-    type: "agree_disagree",
-    keywords: ["government", "spending", "public transportation", "roads", "private vehicles", "cars", "buses", "trains", "infrastructure", "traffic", "environment"],
-    concepts: ["public vs private transport", "government investment", "urban planning", "environmental impact", "traffic congestion"]
+    text: "Genetically modified crops: A solution for world hunger or an environmental threat?",
+    type: "discuss_both_views",
+    keywords: ["genetically modified", "GMO", "crops", "world hunger", "environmental threat", "biotechnology", "agriculture", "food security", "genetic engineering", "sustainability"],
+    concepts: ["agricultural biotechnology", "food security", "environmental impact", "genetic modification", "sustainable farming", "global nutrition"]
   },
   {
     id: 5,
-    text: "Many believe that social media has a negative impact on young people's mental health. Do you agree or disagree with this statement?",
+    text: "Space exploration wastes resources that should solve Earth's problems. Debate this claim.",
     type: "agree_disagree",
-    keywords: ["social media", "negative impact", "young people", "mental health", "depression", "anxiety", "facebook", "instagram", "twitter", "online", "psychological"],
-    concepts: ["digital wellness", "youth psychology", "online behavior", "mental health issues", "social comparison", "cyberbullying"]
+    keywords: ["space exploration", "wastes resources", "Earth's problems", "NASA", "space program", "funding", "priorities", "research", "technology", "innovation", "investment"],
+    concepts: ["space investment", "resource allocation", "scientific priorities", "technological advancement", "global challenges", "space benefits"]
   },
   {
     id: 6,
-    text: "Some people think that homework is an important part of children's education, while others believe it is unnecessary. Discuss both views and give your opinion.",
+    text: "Can NFT art be considered as valuable as classical paintings? Compare cultural impacts.",
     type: "discuss_both_views",
-    keywords: ["homework", "children", "education", "important", "unnecessary", "learning", "school", "academic", "practice", "stress", "family time"],
-    concepts: ["educational methods", "child development", "work-life balance", "academic achievement", "parental involvement"]
+    keywords: ["NFT art", "classical paintings", "valuable", "cultural impacts", "digital art", "blockchain", "traditional art", "creativity", "market value", "artistic expression"],
+    concepts: ["digital vs traditional art", "artistic value", "cultural significance", "art market evolution", "creative expression", "technological art"]
   },
   {
     id: 7,
-    text: "In some countries, online shopping is replacing shopping in stores. Do you think this is a positive or negative development?",
-    type: "positive_negative",
-    keywords: ["online shopping", "e-commerce", "stores", "retail", "internet", "positive", "negative", "development", "convenience", "local business"],
-    concepts: ["digital commerce", "retail industry", "consumer behavior", "economic impact", "technological change"]
+    text: "Should governments invest in nuclear power instead of solar/wind energy? Weigh risks and benefits.",
+    type: "discuss_both_views",
+    keywords: ["governments", "nuclear power", "solar energy", "wind energy", "renewable", "investment", "risks", "benefits", "clean energy", "climate change", "sustainability"],
+    concepts: ["energy policy", "renewable energy", "nuclear safety", "climate solutions", "energy sustainability", "environmental protection"]
   },
   {
     id: 8,
-    text: "Some people believe that climate change is the most important issue facing humanity today. To what extent do you agree or disagree?",
+    text: "Esports require the same skill as physical sports and deserve Olympic recognition. Argue for/against.",
     type: "agree_disagree",
-    keywords: ["climate change", "global warming", "environment", "humanity", "important", "issue", "carbon", "pollution", "sustainability", "future generations"],
-    concepts: ["environmental crisis", "global challenges", "sustainability", "environmental protection", "future of humanity"]
+    keywords: ["esports", "skill", "physical sports", "Olympic recognition", "gaming", "competition", "athletes", "training", "professional", "sports industry"],
+    concepts: ["competitive gaming", "sports definition", "Olympic standards", "professional gaming", "skill comparison", "sports evolution"]
   },
   {
     id: 9,
-    text: "Many argue that traditional newspapers will disappear in the future as people increasingly get their news online. Do you agree or disagree?",
-    type: "agree_disagree",
-    keywords: ["newspapers", "traditional", "disappear", "future", "online", "news", "digital", "media", "internet", "journalism", "information"],
-    concepts: ["media evolution", "digital transformation", "information consumption", "journalism industry", "technological disruption"]
+    text: "Would $1,000 monthly for all citizens reduce poverty or discourage work? Use real-case evidence.",
+    type: "discuss_both_views",
+    keywords: ["universal basic income", "UBI", "1000 monthly", "citizens", "poverty", "discourage work", "welfare", "social policy", "economics", "employment", "social security"],
+    concepts: ["universal basic income", "poverty reduction", "work incentives", "social welfare", "economic policy", "income inequality"]
   }
 ];
 
