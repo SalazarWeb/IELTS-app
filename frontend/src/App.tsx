@@ -177,7 +177,7 @@ const App: React.FC = () => {
       <div className="app">
         <div className="welcome-screen">
           <div className="welcome-card">
-            <h1>🎓 Evaluador de Ensayos IELTS</h1>
+            <h1>🎓 IELTS Text writing test</h1>
             {error && (
               <div className="error-message" style={{color: 'red', margin: '10px 0'}}>
                 ⚠️ {error}
@@ -188,7 +188,7 @@ const App: React.FC = () => {
               <ul>
                 <li>✏️ Tendrás <strong>20 minutos</strong> para escribir tu ensayo</li>
                 <li>📝 Mínimo <strong>150 palabras</strong> requeridas</li>
-                <li>🎯 Serás evaluado<strong>en base a 5</strong></li>
+                <li>🎯 Serás evaluado<strong> en base a 5</strong></li>
                 <li>✅ Necesitas <strong>3 o más</strong> para aprobar</li>
               </ul>
             </div>
