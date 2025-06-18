@@ -1,0 +1,21 @@
+[Unit]
+Description=DesignBot - UX/UI Telegram Bot
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=salazar
+Group=salazar
+WorkingDirectory=/home/salazar/Descargas/DesingBot
+Environment=PATH=/home/salazar/Descargas/DesingBot/venv/bin
+ExecStart=/home/salazar/Descargas/DesingBot/venv/bin/python /home/salazar/Descargas/DesingBot/Bot/main.py
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=designbot
+
+[Install]
+WantedBy=multi-user.target
