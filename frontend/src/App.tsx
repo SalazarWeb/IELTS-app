@@ -12,17 +12,33 @@ interface TopicData {
 
 interface EvaluationResult {
   score: number;
+  band: string;
   wordCount: number;
   detailedScores: {
-    taskAchievement: number;
-    coherenceCohesion: number;
-    lexicalResource: number;
-    grammaticalAccuracy: number;
+    taskAchievement: string;
+    coherenceCohesion: string;
+    lexicalResource: string;
+    grammaticalAccuracy: string;
+  };
+  bandDescriptions?: {
+    taskAchievement: string;
+    coherenceCohesion: string;
+    lexicalResource: string;
+    grammaticalAccuracy: string;
   };
   feedback: {
     general: string;
-    strengths: string[];
-    improvements: string[];
+    criteriaFeedback?: {
+      taskAchievement: string;
+      coherenceCohesion: string;
+      lexicalResource: string;
+      grammaticalAccuracy: string;
+    };
+    keyRecommendations?: string[];
+    nextSteps?: string[];
+    // Compatibilidad con formato anterior
+    strengths?: string[];
+    improvements?: string[];
     topicSpecific?: {
       relevanceLevel: string;
       keywordsUsed: number;
@@ -60,7 +76,7 @@ const App: React.FC = () => {
   const [topic, setTopic] = useState<string>('');
   const [topicData, setTopicData] = useState<TopicData | null>(null); 
   const [essay, setEssay] = useState<string>('');
-  const [timeLeft, setTimeLeft] = useState<number>(30 * 60); 
+  const [timeLeft, setTimeLeft] = useState<number>(40 * 60); // Cambiado de 30 a 40 minutos
   const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,6 +92,28 @@ const App: React.FC = () => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  // Función para obtener el color de la banda IELTS
+  const getBandColor = (band: string): string => {
+    const bandNum = parseFloat(band);
+    if (bandNum >= 8.0) return '#10B981'; // Verde excelente
+    else if (bandNum >= 7.0) return '#059669'; // Verde bueno  
+    else if (bandNum >= 6.0) return '#3B82F6'; // Azul competente
+    else if (bandNum >= 5.0) return '#F59E0B'; // Amarillo moderado
+    else if (bandNum >= 4.0) return '#EF4444'; // Rojo limitado
+    else return '#6B7280'; // Gris muy limitado
+  };
+
+  // Función para obtener descripción de la banda
+  const getBandDescription = (band: string): string => {
+    const bandNum = parseFloat(band);
+    if (bandNum >= 8.0) return 'Excelente';
+    else if (bandNum >= 7.0) return 'Competente Alto';
+    else if (bandNum >= 6.0) return 'Competente';
+    else if (bandNum >= 5.0) return 'Moderado';
+    else if (bandNum >= 4.0) return 'Limitado';
+    else return 'Muy Limitado';
+  };
+
   // Timer effect
   useEffect(() => {
     let interval: number | null = null;
@@ -85,7 +123,6 @@ const App: React.FC = () => {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsTimerActive(false);
-      // Opcional: evaluar automáticamente cuando se acabe el tiempo
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -104,7 +141,7 @@ const App: React.FC = () => {
       
       const data: TopicResponse = await response.json();
       setTopic(data.topic);
-      setTopicData(data.topicData); // Guardar datos completos del tema
+      setTopicData(data.topicData);
     } catch (error) {
       console.error('Error al obtener el tema:', error);
       setError('Error al cargar el tema. Por favor, verifica que el servidor esté funcionando.');
@@ -131,7 +168,7 @@ const App: React.FC = () => {
         body: JSON.stringify({ 
           essay: essay,
           topic: topic,
-          topicData: topicData // Enviar datos completos del tema para análisis
+          topicData: topicData
         }),
       });
       
@@ -140,7 +177,7 @@ const App: React.FC = () => {
       }
       
       const data: EvaluationResult = await response.json();
-      console.log('Resultado de evaluación:', data); // Para debugging
+      console.log('Resultado de evaluación:', data);
       setResult(data);
       setCurrentScreen('results');
       setIsTimerActive(false);
@@ -158,7 +195,7 @@ const App: React.FC = () => {
     await fetchTopic();
     setCurrentScreen('writing');
     setIsTimerActive(true);
-    setTimeLeft(30 * 60);
+    setTimeLeft(40 * 60); // Cambiado de 30 a 40 minutos
     setEssay('');
   };
 
@@ -166,9 +203,9 @@ const App: React.FC = () => {
   const resetTest = () => {
     setCurrentScreen('welcome');
     setTopic('');
-    setTopicData(null); // Limpiar datos del tema
+    setTopicData(null);
     setEssay('');
-    setTimeLeft(30 * 60);
+    setTimeLeft(40 * 60); // Cambiado de 30 a 40 minutos
     setIsTimerActive(false);
     setResult(null);
   };
@@ -179,23 +216,24 @@ const App: React.FC = () => {
       <div className="app">
         <div className="welcome-screen">
           <div className="welcome-card">
-            <h1>🎓 IELTS Text writing test</h1>
+            <h1>🎓 IELTS Writing Test</h1>
             {error && (
               <div className="error-message" style={{color: 'red', margin: '10px 0'}}>
                 ⚠️ {error}
               </div>
             )}
             <div className="instructions">
-              <h2>Instrucciones</h2>
+              <h2>Evaluación Oficial IELTS</h2>
               <ul>
-                <li>✏️ Tendrás<strong> 30 minutos</strong> para escribir un ensayo a partir de un<strong> tema aleatorio</strong></li>
-                <li>📝 Con un mínimo de<strong> 250 palabras</strong> requeridas</li>
-                <li>🎯 Serás evaluado<strong> en base a 5</strong></li>
-                <li>✅ Necesitas<strong> 3 o más</strong> para aprobar</li>
+                <li>📊 <strong>4 Criterios Oficiales:</strong> Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy</li>
+                <li>⭐ <strong>Bandas 1-9:</strong> Evaluación con bandas oficiales IELTS (5.0, 5.5, 6.0, etc.)</li>
+                <li>⏰ <strong>40 minutos</strong> para escribir mínimo <strong>250 palabras</strong></li>
+                <li>🎯 <strong>Retroalimentación detallada</strong> con recomendaciones específicas</li>
+                <li>📝 <strong>Penalizaciones:</strong> -1 banda por menos de 250 palabras</li>
               </ul>
             </div>
             <button className="start-button" onClick={startTest}>
-              Comenzar Prueba
+              Comenzar Evaluación IELTS
             </button>
           </div>
         </div>
@@ -220,6 +258,7 @@ const App: React.FC = () => {
             <div className="word-counter">
               <span className={`word-count ${wordCount < 250 ? 'insufficient' : 'sufficient'}`}>
                 📝 {wordCount}/250 palabras
+                {wordCount < 250 && <small style={{display: 'block', fontSize: '0.8em'}}>(-1 banda penalización)</small>}
               </span>
               <div 
                 className="progress-circle" 
@@ -232,19 +271,26 @@ const App: React.FC = () => {
           <div className="writing-content">
             {timeLeft === 0 && (
               <div className="time-up-message">
-                ⏰ ¡Se te acabó el tiempo! Suerte a la próxima. Puedes evaluar tu ensayo o intentar de nuevo.
+                ⏰ ¡Se acabó el tiempo! Puedes evaluar tu ensayo o reiniciar.
               </div>
             )}
             
             <div className="topic-section">
-              <h2>TEMA:</h2>
+              <h2>IELTS Topic</h2>
               <p className="topic-text">{topic}</p>
+              {topicData && (
+                <div style={{marginTop: '10px', fontSize: '0.9em', color: '#666'}}>
+                  <strong>Tipo:</strong> {topicData.type.replace(/_/g, ' ')} | 
+                  <strong> Tiempo:</strong> 40 min recomendados | 
+                  <strong> Palabras:</strong> 280-320 ideales
+                </div>
+              )}
             </div>
 
             <div className="essay-section">
               <textarea
                 className="essay-textarea"
-                placeholder="Start typing here..."
+                placeholder="Start writing your IELTS essay here... Remember to address all parts of the question, use formal academic language, and include specific examples to support your arguments."
                 value={essay}
                 onChange={(e) => setEssay(e.target.value)}
                 disabled={timeLeft === 0}
@@ -257,9 +303,9 @@ const App: React.FC = () => {
               className="evaluate-button"
               onClick={evaluateEssay}
               disabled={wordCount < 250 || isLoading}
-              title={wordCount < 250 ? "Requiere 250 palabras" : ""}
+              title={wordCount < 250 ? "Requiere 250 palabras mínimo" : ""}
             >
-              {isLoading ? '⏳ Evaluando...' : '✅ Evaluar Ensayo'}
+              {isLoading ? '⏳ Evaluando con Criterios IELTS...' : '📊 Evaluar con Bandas IELTS'}
             </button>
             <button className="reset-button" onClick={resetTest}>
               🔄 Reiniciar
@@ -270,59 +316,220 @@ const App: React.FC = () => {
     );
   }
 
-  // Pantalla de resultados
+  // Pantalla de resultados con nuevo formato IELTS
   if (currentScreen === 'results' && result) {
-    const status = result.score >= 3 ? 'Aprobado' : 'Necesita Mejorar';
+    const overallBand = parseFloat(result.band || result.score.toString());
+    const isApproved = overallBand >= 6.0; // Banda 6.0+ generalmente aceptable
     
     return (
       <div className="app">
         <div className="results-screen">
           <div className="results-card">
-            <h1>📊 Resultados de tu Ensayo</h1>
+            <h1>🏆 IELTS Writing Evaluation</h1>
             
+            {/* Banda general */}
             <div className="score-section">
-              <div className={`score-display ${status === 'Aprobado' ? 'passed' : 'failed'}`}>
-                <span className="score-number">{result.score}</span>
-                <span className="score-total">/5</span>
+              <div 
+                className="ielts-band-display"
+                style={{
+                  backgroundColor: getBandColor(result.band || result.score.toString()),
+                  color: 'white',
+                  padding: '20px',
+                  borderRadius: '15px',
+                  textAlign: 'center',
+                  marginBottom: '20px'
+                }}
+              >
+                <div style={{fontSize: '3rem', fontWeight: 'bold'}}>
+                  Band {result.band || result.score.toFixed(1)}
+                </div>
+                <div style={{fontSize: '1.2rem', marginTop: '5px'}}>
+                  {getBandDescription(result.band || result.score.toString())}
+                </div>
               </div>
-              <div className={`status ${status === 'Aprobado' ? 'passed' : 'failed'}`}>
-                {status === 'Aprobado' ? '🎉' : '📚'} {status}
+              
+              <div className={`status ${isApproved ? 'passed' : 'failed'}`}>
+                {isApproved ? '✅ Competente para uso académico' : '📚 Requiere mejora para estándar IELTS'}
               </div>
             </div>
 
+            {/* Puntuaciones detalladas por criterio */}
             <div className="detailed-scores">
-              <h3>📋 Puntuaciones Detalladas:</h3>
-              <div className="criteria-grid">
-                <div className="criteria-item">
-                  <span>Task Achievement:</span>
-                  <span>{result.detailedScores.taskAchievement}/5</span>
+              <h3>📋 Criterios IELTS (25% cada uno):</h3>
+              <div className="criteria-grid-ielts">
+                <div className="criteria-item-ielts">
+                  <div className="criteria-header">
+                    <strong>Task Achievement</strong>
+                    <span 
+                      className="band-score"
+                      style={{color: getBandColor(result.detailedScores.taskAchievement)}}
+                    >
+                      Band {result.detailedScores.taskAchievement}
+                    </span>
+                  </div>
+                  {result.bandDescriptions && (
+                    <div className="criteria-description">
+                      {result.bandDescriptions.taskAchievement}
+                    </div>
+                  )}
                 </div>
-                <div className="criteria-item">
-                  <span>Coherence & Cohesion:</span>
-                  <span>{result.detailedScores.coherenceCohesion}/5</span>
+                
+                <div className="criteria-item-ielts">
+                  <div className="criteria-header">
+                    <strong>Coherence & Cohesion</strong>
+                    <span 
+                      className="band-score"
+                      style={{color: getBandColor(result.detailedScores.coherenceCohesion)}}
+                    >
+                      Band {result.detailedScores.coherenceCohesion}
+                    </span>
+                  </div>
+                  {result.bandDescriptions && (
+                    <div className="criteria-description">
+                      {result.bandDescriptions.coherenceCohesion}
+                    </div>
+                  )}
                 </div>
-                <div className="criteria-item">
-                  <span>Lexical Resource:</span>
-                  <span>{result.detailedScores.lexicalResource}/5</span>
+                
+                <div className="criteria-item-ielts">
+                  <div className="criteria-header">
+                    <strong>Lexical Resource</strong>
+                    <span 
+                      className="band-score"
+                      style={{color: getBandColor(result.detailedScores.lexicalResource)}}
+                    >
+                      Band {result.detailedScores.lexicalResource}
+                    </span>
+                  </div>
+                  {result.bandDescriptions && (
+                    <div className="criteria-description">
+                      {result.bandDescriptions.lexicalResource}
+                    </div>
+                  )}
                 </div>
-                <div className="criteria-item">
-                  <span>Grammatical Accuracy:</span>
-                  <span>{result.detailedScores.grammaticalAccuracy}/5</span>
+                
+                <div className="criteria-item-ielts">
+                  <div className="criteria-header">
+                    <strong>Grammatical Range & Accuracy</strong>
+                    <span 
+                      className="band-score"
+                      style={{color: getBandColor(result.detailedScores.grammaticalAccuracy)}}
+                    >
+                      Band {result.detailedScores.grammaticalAccuracy}
+                    </span>
+                  </div>
+                  {result.bandDescriptions && (
+                    <div className="criteria-description">
+                      {result.bandDescriptions.grammaticalAccuracy}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
+            {/* Retroalimentación específica IELTS */}
             <div className="details-section">
               <div className="detail-item">
-                <strong>📝 Palabras escritas:</strong> {result.wordCount}
+                <strong>📊 Evaluación General:</strong>
+                <div className="feedback" dangerouslySetInnerHTML={{__html: result.feedback.general.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />
               </div>
               
               <div className="detail-item">
-                <strong>💬 Feedback General:</strong>
-                <p className="feedback">{result.feedback.general}</p>
+                <strong>📝 Palabras escritas:</strong> {result.wordCount}
+                {result.wordCount < 250 && (
+                  <span style={{color: '#EF4444', marginLeft: '10px'}}>
+                    ⚠️ Penalización: -1 banda por menos de 250 palabras
+                  </span>
+                )}
               </div>
 
-              {result.feedback.strengths.length > 0 && (
+              {/* Feedback por criterios (nuevo formato) */}
+              {result.feedback.criteriaFeedback && (
+                <div className="detail-item">
+                  <strong>🔍 Análisis por Criterios:</strong>
+                  <div className="criteria-feedback">
+                    {Object.entries(result.feedback.criteriaFeedback).map(([criterion, feedback]) => (
+                      <div key={criterion} className="criterion-feedback">
+                        <div 
+                          className="criterion-name"
+                          style={{
+                            fontWeight: 'bold',
+                            color: '#2563EB',
+                            marginBottom: '5px',
+                            textTransform: 'capitalize'
+                          }}
+                        >
+                          {criterion.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:
+                        </div>
+                        <div 
+                          className="criterion-text"
+                          dangerouslySetInnerHTML={{
+                            __html: feedback.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Recomendaciones clave */}
+              {result.feedback.keyRecommendations && result.feedback.keyRecommendations.length > 0 && (
+                <div className="detail-item">
+                  <strong>🎯 Recomendaciones Prioritarias:</strong>
+                  <ul>
+                    {result.feedback.keyRecommendations.map((rec, index) => (
+                      <li 
+                        key={index}
+                        dangerouslySetInnerHTML={{
+                          __html: rec.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        }}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Próximos pasos */}
+              {result.feedback.nextSteps && result.feedback.nextSteps.length > 0 && (
+                <div className="detail-item">
+                  <strong>🚀 Próximos Pasos:</strong>
+                  <ul>
+                    {result.feedback.nextSteps.map((step, index) => (
+                      <li key={index}>{step}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Análisis del tema */}
+              {result.topicAnalysis && (
+                <div className="topic-analysis">
+                  <h3>🔍 Análisis de Relevancia al Tema:</h3>
+                  <div className="analysis-grid">
+                    <div className="analysis-item">
+                      <strong>Enfoque del Tema:</strong> 
+                      <span style={{
+                        color: result.topicAnalysis.topicFocus === 'High' ? '#10B981' : 
+                               result.topicAnalysis.topicFocus === 'Medium' ? '#F59E0B' : '#EF4444'
+                      }}>
+                        {result.topicAnalysis.topicFocus}
+                      </span>
+                    </div>
+                    <div className="analysis-item">
+                      <strong>Palabras Clave Usadas:</strong> {result.topicAnalysis.keywordRatio}%
+                    </div>
+                    <div className="analysis-item">
+                      <strong>Conceptos Cubiertos:</strong> {result.topicAnalysis.conceptRatio}%
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Compatibilidad con formato anterior */}
+              {result.feedback.strengths && result.feedback.strengths.length > 0 && (
                 <div className="detail-item">
                   <strong>✅ Fortalezas:</strong>
                   <ul>
@@ -333,7 +540,7 @@ const App: React.FC = () => {
                 </div>
               )}
 
-              {result.feedback.improvements.length > 0 && (
+              {result.feedback.improvements && result.feedback.improvements.length > 0 && (
                 <div className="detail-item">
                   <strong>📈 Áreas de Mejora:</strong>
                   <ul>
@@ -343,46 +550,14 @@ const App: React.FC = () => {
                   </ul>
                 </div>
               )}
-
-              {/* Nuevo: Análisis de tema */}
-              {result.topicAnalysis && (
-                <div className="topic-analysis">
-                  <h3>🔍 Análisis del Tema:</h3>
-                  <div className="analysis-item">
-                    <strong>Nivel de Relevancia:</strong> {result.topicAnalysis.relevanceScore}
-                  </div>
-                  <div className="analysis-item">
-                    <strong>Enfoque del Tema:</strong> {result.topicAnalysis.topicFocus}
-                  </div>
-                  <div className="analysis-item">
-                    <strong>Relación de Palabras Clave:</strong> {result.topicAnalysis.keywordRatio}
-                  </div>
-                  <div className="analysis-item">
-                    <strong>Relación de Conceptos:</strong> {result.topicAnalysis.conceptRatio}
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="actions">
               <button className="retry-button" onClick={resetTest}>
-                🔄 Intentar de Nuevo
+                🔄 Nueva Evaluación IELTS
               </button>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Si algo sale mal, mostrar mensaje de error
-  if (currentScreen === 'results' && !result) {
-    return (
-      <div className="app">
-        <div className="error-screen">
-          <h2>❌ Error</h2>
-          <p>No se pudieron cargar los resultados.</p>
-          <button onClick={resetTest}>🔄 Volver al Inicio</button>
         </div>
       </div>
     );

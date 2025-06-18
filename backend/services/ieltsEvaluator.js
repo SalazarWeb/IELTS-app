@@ -4,12 +4,60 @@ class IELTSEvaluator {
     constructor() {
         this.analyzer = new EssayAnalyzer();
         
-        // Criterios oficiales IELTS con pesos
+        // Criterios oficiales IELTS con pesos iguales (25% cada uno)
         this.criteria = {
             taskAchievement: 0.25,
             coherenceCohesion: 0.25,
             lexicalResource: 0.25,
             grammaticalAccuracy: 0.25
+        };
+
+        // Descriptores oficiales de bandas IELTS (1-9)
+        this.bandDescriptors = {
+            taskAchievement: {
+                9: "Respuesta completa a todas las partes de la tarea. Posición clara y bien desarrollada. Ideas relevantes y completamente extendidas.",
+                8: "Respuesta suficiente a todas las partes de la tarea. Posición clara. Ideas bien desarrolladas con ejemplos relevantes.",
+                7: "Aborda todas las partes aunque algunas más desarrolladas que otras. Posición clara. Ideas principales claras y apoyadas.",
+                6: "Aborda todas las partes pero algunas insuficientemente. Posición relevante aunque no siempre clara. Ideas principales relevantes.",
+                5: "Aborda la tarea solo parcialmente. Posición poco clara o desarrollada. Ideas limitadas y repetitivas.",
+                4: "Respuesta tangencial o mínima. Posición confusa. Ideas irrelevantes o desarrolladas inadecuadamente.",
+                3: "No aborda la tarea apropiadamente. Sin posición clara. Ideas confusas o irrelevantes.",
+                2: "Intento mínimo de abordar la tarea. Sin desarrollo de ideas.",
+                1: "No aborda la tarea. Contenido completamente irrelevante."
+            },
+            coherenceCohesion: {
+                9: "Cohesión flexible y natural. Párrafos bien balanceados. Progresión clara sin esfuerzo aparente.",
+                8: "Secuencia lógica. Párrafos apropiados. Conectores bien usados. Referencia clara y apropiada.",
+                7: "Organización clara. Rango de conectores apropiados. Referencias claras y apropiadas.",
+                6: "Información organizada coherentemente. Conectores efectivos. Referencias claras.",
+                5: "Organización presente. Conectores inadecuados o repetitivos. Referencias pueden ser confusas.",
+                4: "Información organizada pero sin progresión clara. Conectores básicos o inexactos.",
+                3: "Organización confusa. Conectores limitados. Referencias poco claras.",
+                2: "Poco control organizacional. Conectores mínimos.",
+                1: "Sin organización evidente. Sin conectores apropiados."
+            },
+            lexicalResource: {
+                9: "Rango completo y natural. Uso preciso y apropiado. Flexibilidad y control total.",
+                8: "Amplio rango de vocabulario. Uso natural y sofisticado. Control de estilo y colocación.",
+                7: "Rango suficiente. Flexibilidad y control preciso. Colocaciones apropiadas.",
+                6: "Rango adecuado. Intenta vocabulario menos común. Errores ocasionales en elección de palabras.",
+                5: "Rango limitado pero adecuado. Errores en vocabulario menos común. Repetición evidente.",
+                4: "Rango limitado. Errores en vocabulario básico. Control inadecuado de formación de palabras.",
+                3: "Rango muy limitado. Errores frecuentes que pueden impedir significado.",
+                2: "Extremadamente limitado. Errores que impiden comunicación.",
+                1: "Solo palabras aisladas o memorización de frases."
+            },
+            grammaticalAccuracy: {
+                9: "Completo rango de estructuras. Completa flexibilidad y control preciso. Errores menores ocasionales.",
+                8: "Amplio rango de estructuras. Flexibilidad y control preciso. Errores ocasionales 'deslices'.",
+                7: "Rango de estructuras complejas. Control frecuente de gramática y puntuación. Errores ocasionales.",
+                6: "Mezcla de estructuras simples y complejas. Flexibilidad limitada. Errores que no impiden comunicación.",
+                5: "Rango limitado con solo estructuras simples frecuentemente correctas. Estructuras complejas con errores.",
+                4: "Solo estructuras simples básicas. Errores frecuentes que pueden impedir significado.",
+                3: "Estructuras básicas ocasionalmente correctas. Errores dominantes que dificultan significado.",
+                2: "Solo patrones memorizados. Errores severos que impiden comunicación.",
+                1: "Sin control gramatical evidente."
+            }
         };
 
         // Palabras comunes en inglés para detectar idioma
@@ -51,7 +99,6 @@ class IELTSEvaluator {
             .filter(word => word.length > 0);
 
         if (words.length < 10) {
-            // Texto muy corto, difícil de determinar idioma
             return { isEnglish: true, confidence: 0.5, reason: 'Texto demasiado corto para determinar idioma' };
         }
 
@@ -59,20 +106,18 @@ class IELTSEvaluator {
         let nonEnglishScore = 0;
         let totalWords = words.length;
 
-        // Contar palabras en inglés
         words.forEach(word => {
             if (this.englishCommonWords.includes(word)) {
                 englishScore += 1;
             }
             if (this.nonEnglishIndicators.includes(word)) {
-                nonEnglishScore += 2; // Peso mayor para indicadores de otros idiomas
+                nonEnglishScore += 2;
             }
         });
 
         const englishRatio = englishScore / totalWords;
         const nonEnglishRatio = nonEnglishScore / totalWords;
 
-        // Determinar idioma basado en ratios
         if (nonEnglishRatio > 0.15) {
             return { 
                 isEnglish: false, 
@@ -99,7 +144,6 @@ class IELTSEvaluator {
     // Evaluar ajuste al tema específico
     evaluateTopicRelevance(essayText, topicData) {
         if (!topicData || !topicData.keywords || !topicData.concepts) {
-            // Si no hay datos del tema, usar análisis básico
             return {
                 relevanceScore: 0.5,
                 keywordsFound: [],
@@ -114,7 +158,6 @@ class IELTSEvaluator {
             .split(/\s+/)
             .filter(word => word.length > 2);
 
-        // Buscar palabras clave del tema
         const keywordsFound = topicData.keywords.filter(keyword => 
             essayWords.some(word => 
                 word.includes(keyword.toLowerCase()) || 
@@ -122,7 +165,6 @@ class IELTSEvaluator {
             )
         );
 
-        // Buscar conceptos relacionados
         const conceptsCovered = topicData.concepts.filter(concept => {
             const conceptWords = concept.toLowerCase().split(' ');
             return conceptWords.some(conceptWord => 
@@ -133,18 +175,15 @@ class IELTSEvaluator {
             );
         });
 
-        // Calcular puntuación de relevancia
         const keywordRatio = keywordsFound.length / topicData.keywords.length;
         const conceptRatio = conceptsCovered.length / topicData.concepts.length;
         const relevanceScore = (keywordRatio * 0.6 + conceptRatio * 0.4);
 
-        // Determinar nivel de enfoque al tema
         let topicFocus;
         if (relevanceScore >= 0.6) topicFocus = 'High';
         else if (relevanceScore >= 0.3) topicFocus = 'Medium';
         else topicFocus = 'Low';
 
-        // Evaluar alineación con tipo de tarea
         const taskTypeAlignment = this.evaluateTaskTypeAlignment(essayText, topicData.type);
 
         return {
@@ -185,7 +224,6 @@ class IELTSEvaluator {
             }
         };
 
-        // Contar indicadores para el tipo de tarea específico
         if (patterns[taskType]) {
             patterns[taskType].score = patterns[taskType].indicators.filter(indicator => 
                 textLower.includes(indicator)
@@ -208,6 +246,7 @@ class IELTSEvaluator {
             if (!languageDetection.isEnglish) {
                 return {
                     score: 0.0,
+                    band: "0.0",
                     wordCount: essayText.split(/\s+/).filter(word => word.length > 0).length,
                     detailedScores: {
                         taskAchievement: 0.0,
@@ -229,38 +268,39 @@ class IELTSEvaluator {
                 };
             }
 
-            // Si está en inglés, continuar con evaluación normal
             // Análisis básico del ensayo
             const analysis = this.analyzer.analyzeEssay(essayText, topic);
             
-            // NUEVA: Análisis de relevancia al tema
+            // Análisis de relevancia al tema
             const topicRelevance = this.evaluateTopicRelevance(essayText, topicData);
             
-            // Evaluación por criterios IELTS (MEJORADA con relevancia al tema)
-            const scores = {
+            // Evaluación por criterios IELTS con bandas 1-9
+            const bandScores = {
                 taskAchievement: this.evaluateTaskAchievement(analysis, topic, topicRelevance),
                 coherenceCohesion: this.evaluateCoherenceCohesion(analysis),
                 lexicalResource: this.evaluateLexicalResource(analysis),
                 grammaticalAccuracy: this.evaluateGrammaticalAccuracy(analysis)
             };
             
-            // Calcular puntuación final
-            const finalScore = this.calculateFinalScore(scores);
+            // Calcular banda final (promedio de los 4 criterios)
+            const finalBand = this.calculateFinalBand(bandScores);
             
-            // Generar feedback mejorado con información del tema
-            const feedback = this.generateEnhancedFeedback(scores, analysis, topicRelevance);
+            // Generar retroalimentación específica del IELTS
+            const feedback = this.generateIELTSFeedback(bandScores, analysis, topicRelevance);
             
             return {
-                score: Math.round(finalScore * 10) / 10,
+                score: finalBand, // Mantenemos para compatibilidad
+                band: this.formatBand(finalBand),
                 wordCount: analysis.wordAnalysis.totalWords,
                 detailedScores: {
-                    taskAchievement: Math.round(scores.taskAchievement * 10) / 10,
-                    coherenceCohesion: Math.round(scores.coherenceCohesion * 10) / 10,
-                    lexicalResource: Math.round(scores.lexicalResource * 10) / 10,
-                    grammaticalAccuracy: Math.round(scores.grammaticalAccuracy * 10) / 10
+                    taskAchievement: this.formatBand(bandScores.taskAchievement),
+                    coherenceCohesion: this.formatBand(bandScores.coherenceCohesion),
+                    lexicalResource: this.formatBand(bandScores.lexicalResource),
+                    grammaticalAccuracy: this.formatBand(bandScores.grammaticalAccuracy)
                 },
+                bandDescriptions: this.getBandDescriptions(bandScores),
                 feedback,
-                topicAnalysis: topicRelevance, // NUEVO: Análisis específico del tema
+                topicAnalysis: topicRelevance,
                 evaluatedAt: new Date().toISOString()
             };
             
@@ -270,211 +310,325 @@ class IELTSEvaluator {
         }
     }
 
+    // NUEVAS FUNCIONES DE EVALUACIÓN CON BANDAS 1-9
+
     evaluateTaskAchievement(analysis, topic, topicRelevance = null) {
-        let score = 2.0;
-        
+        let band = 1.0;
         const wordCount = analysis.wordAnalysis.totalWords;
-        const paragraphs = analysis.paragraphAnalysis.totalParagraphs;
         const structure = analysis.structureAnalysis;
         
-        // Longitud del ensayo
-        if (wordCount >= 250) score += 0.8;
-        else if (wordCount >= 200) score += 0.5;
-        else if (wordCount >= 150) score += 0.2;
-        else score -= 0.5;
+        // Penalización severa por menos de 250 palabras (-1 banda)
+        if (wordCount < 250) {
+            band = Math.max(1.0, band - 1.0);
+        }
         
-        // Estructura básica
-        if (paragraphs >= 4) score += 0.5;
-        else if (paragraphs >= 3) score += 0.3;
+        // Criterios básicos de Task Achievement
+        if (wordCount >= 250) band = 4.0; // Cumple mínimo
+        if (wordCount >= 280) band = 5.0; // Desarrollo adecuado
         
-        // Introducción y conclusión
-        if (structure.hasIntroduction) score += 0.4;
-        if (structure.hasConclusion) score += 0.4;
+        // Estructura y organización
+        if (structure.hasIntroduction && structure.hasConclusion) {
+            band += 1.0;
+        }
+        if (analysis.paragraphAnalysis.totalParagraphs >= 4) {
+            band += 0.5;
+        }
         
-        // NUEVO: Relevancia al tema (factor más importante)
+        // Relevancia al tema (factor crítico)
         if (topicRelevance) {
-            if (topicRelevance.relevanceScore >= 0.6) score += 1.0; // Muy relevante
-            else if (topicRelevance.relevanceScore >= 0.4) score += 0.6; // Moderadamente relevante
-            else if (topicRelevance.relevanceScore >= 0.2) score += 0.3; // Algo relevante
-            else score -= 0.5; // Poco relevante al tema
+            if (topicRelevance.relevanceScore >= 0.7) band += 1.5; // Excelente relevancia
+            else if (topicRelevance.relevanceScore >= 0.5) band += 1.0; // Buena relevancia
+            else if (topicRelevance.relevanceScore >= 0.3) band += 0.5; // Relevancia básica
+            else band -= 1.0; // Poco relevante (-0.5 banda)
             
             // Alineación con tipo de tarea
             switch (topicRelevance.taskTypeAlignment) {
-                case 'Strong': score += 0.5; break;
-                case 'Good': score += 0.3; break;
-                case 'Weak': score += 0.1; break;
-                case 'Poor': score -= 0.2; break;
+                case 'Strong': band += 1.0; break;
+                case 'Good': band += 0.5; break;
+                case 'Weak': break;
+                case 'Poor': band -= 0.5; break;
             }
         }
         
-        return Math.min(5.0, Math.max(1.0, score));
+        return Math.min(9.0, Math.max(1.0, band));
     }
 
     evaluateCoherenceCohesion(analysis) {
-        let score = 2.0;
+        let band = 3.0; // Base para ensayos con estructura básica
         
         const coherence = analysis.coherenceAnalysis;
-        
-        // Uso básico de conectores
         const totalConnectors = coherence.contrastConnectors + coherence.additionConnectors + 
                                coherence.causeEffectConnectors + coherence.exampleConnectors;
         
-        if (totalConnectors >= 4) score += 0.6;
-        else if (totalConnectors >= 2) score += 0.3;
-        else if (totalConnectors >= 1) score += 0.1;
+        // Uso de conectores académicos
+        if (totalConnectors >= 6) band = 7.0; // Rango apropiado de conectores
+        else if (totalConnectors >= 4) band = 6.0; // Conectores efectivos
+        else if (totalConnectors >= 2) band = 5.0; // Conectores básicos
+        else if (totalConnectors >= 1) band = 4.0; // Conectores limitados
         
-        // Estructura de párrafos
-        const paragraphBalance = analysis.paragraphAnalysis.structureBalance;
-        if (paragraphBalance === 'Well balanced') score += 0.4;
-        else if (paragraphBalance === 'Moderately balanced') score += 0.2;
+        // Variedad de conectores
+        if (coherence.transitionVariety === 'Excellent variety') band += 1.0;
+        else if (coherence.transitionVariety === 'Good variety') band += 0.5;
+        else if (coherence.transitionVariety === 'Limited variety') band -= 0.5;
         
-        return Math.min(5.0, Math.max(1.0, score));
+        // Balance de párrafos
+        if (analysis.paragraphAnalysis.structureBalance === 'Well balanced') band += 0.5;
+        else if (analysis.paragraphAnalysis.structureBalance === 'Unbalanced') band -= 1.0;
+        
+        // Referencias pronominales (cohesión)
+        const pronouns = Object.values(coherence.pronounReference).reduce((a, b) => a + b, 0);
+        if (pronouns >= 8) band += 0.5; // Buen uso de referencias
+        
+        return Math.min(9.0, Math.max(1.0, band));
     }
 
     evaluateLexicalResource(analysis) {
-        let score = 2.0;
+        let band = 3.0;
         
         const vocabulary = analysis.vocabularyAnalysis;
         const words = analysis.wordAnalysis;
         
-        // Diversidad léxica básica
-        const lexicalDiversity = words.lexicalDiversity;
-        if (lexicalDiversity >= 0.5) score += 0.6;
-        else if (lexicalDiversity >= 0.4) score += 0.4;
-        else if (lexicalDiversity >= 0.3) score += 0.2;
+        // Diversidad léxica
+        if (words.lexicalDiversity >= 0.7) band = 8.0; // Rango amplio
+        else if (words.lexicalDiversity >= 0.6) band = 7.0; // Rango suficiente
+        else if (words.lexicalDiversity >= 0.5) band = 6.0; // Rango adecuado
+        else if (words.lexicalDiversity >= 0.4) band = 5.0; // Rango limitado
+        else if (words.lexicalDiversity >= 0.3) band = 4.0; // Rango muy limitado
         
-        // Vocabulario formal
-        if (vocabulary.formalVocabulary >= 3) score += 0.4;
-        else if (vocabulary.formalVocabulary >= 1) score += 0.2;
+        // Vocabulario formal y académico
+        if (vocabulary.formalVocabulary >= 8) band += 1.0; // Uso natural y sofisticado
+        else if (vocabulary.formalVocabulary >= 5) band += 0.5; // Buen uso
+        else if (vocabulary.formalVocabulary >= 3) band += 0.2; // Uso básico
         
-        return Math.min(5.0, Math.max(1.0, score));
+        // Penalización por vocabulario débil (ej: 'ageing population' vs 'old people')
+        if (vocabulary.weakVocabulary >= 5) band -= 1.0;
+        else if (vocabulary.weakVocabulary >= 3) band -= 0.5;
+        
+        // Repetición excesiva (evitar "problem" 4 veces)
+        if (vocabulary.wordRepetition >= 8) band -= 0.5;
+        
+        // Conectores académicos (however, furthermore, consequently)
+        if (vocabulary.academicConnectors >= 4) band += 0.5;
+        
+        return Math.min(9.0, Math.max(1.0, band));
     }
 
     evaluateGrammaticalAccuracy(analysis) {
-        let score = 2.0;
+        let band = 3.0;
         
         const grammar = analysis.grammarAnalysis;
         const sentences = analysis.sentenceAnalysis;
         
-        // Variedad de estructuras básica
-        const avgSentenceLength = sentences.avgSentenceLength;
-        if (avgSentenceLength >= 15) score += 0.3;
-        else if (avgSentenceLength >= 12) score += 0.1;
+        // Variedad de estructuras
+        if (sentences.avgSentenceLength >= 18) band = 6.0; // Mezcla de estructuras
+        else if (sentences.avgSentenceLength >= 15) band = 5.0; // Algunas estructuras complejas
+        else if (sentences.avgSentenceLength >= 12) band = 4.0; // Principalmente simples
         
-        // Estructuras complejas básicas
-        if (grammar.conditionalStructures >= 1) score += 0.2;
-        if (grammar.relativeClauses >= 1) score += 0.1;
-        if (grammar.passiveVoice >= 1) score += 0.1;
+        // Estructuras complejas (condicionales, pasivas, cláusulas relativas)
+        const complexStructures = grammar.conditionalStructures + grammar.passiveVoice + grammar.relativeClauses;
+        if (complexStructures >= 8) band += 2.0; // Amplio rango
+        else if (complexStructures >= 5) band += 1.5; // Buen rango
+        else if (complexStructures >= 3) band += 1.0; // Estructuras básicas
+        else if (complexStructures >= 1) band += 0.5; // Intentos de complejidad
         
-        return Math.min(5.0, Math.max(1.0, score));
+        // Voz pasiva (benefits are threatened)
+        if (grammar.passiveVoice >= 3) band += 0.5;
+        
+        // Verbos modales para flexibilidad
+        if (grammar.modalVerbs >= 5) band += 0.5;
+        
+        // Variedad de oraciones
+        if (sentences.sentenceVarietyScore >= 0.4) band += 0.5; // Buena variedad
+        else if (sentences.sentenceVarietyScore < 0.2) band -= 0.5; // Poca variedad
+        
+        return Math.min(9.0, Math.max(1.0, band));
     }
 
-    calculateFinalScore(scores) {
-        return (scores.taskAchievement * this.criteria.taskAchievement +
-                scores.coherenceCohesion * this.criteria.coherenceCohesion +
-                scores.lexicalResource * this.criteria.lexicalResource +
-                scores.grammaticalAccuracy * this.criteria.grammaticalAccuracy);
+    calculateFinalBand(bandScores) {
+        // Promedio de los 4 criterios (peso igual 25% cada uno)
+        return (bandScores.taskAchievement + bandScores.coherenceCohesion + 
+                bandScores.lexicalResource + bandScores.grammaticalAccuracy) / 4;
     }
 
-    // Generar feedback mejorado con análisis del tema
-    generateEnhancedFeedback(scores, analysis, topicRelevance) {
-        const feedback = {
-            general: this.getGeneralFeedback(scores),
-            strengths: this.identifyEnhancedStrengths(scores, analysis, topicRelevance),
-            improvements: this.identifyEnhancedImprovements(scores, analysis, topicRelevance),
-            topicSpecific: this.getTopicSpecificFeedback(topicRelevance)
+    formatBand(band) {
+        // Formatear a .0 o .5 como en IELTS real
+        const rounded = Math.round(band * 2) / 2;
+        return rounded % 1 === 0 ? `${rounded.toFixed(1)}` : `${rounded.toFixed(1)}`;
+    }
+
+    getBandDescriptions(bandScores) {
+        const descriptions = {};
+        Object.keys(bandScores).forEach(criterion => {
+            const band = Math.round(bandScores[criterion]);
+            descriptions[criterion] = this.bandDescriptors[criterion][band] || 
+                                     this.bandDescriptors[criterion][5]; // Default a banda 5
+        });
+        return descriptions;
+    }
+
+    // Generar retroalimentación alineada al IELTS
+    generateIELTSFeedback(bandScores, analysis, topicRelevance) {
+        const overallBand = this.calculateFinalBand(bandScores);
+        
+        return {
+            general: this.getOverallBandComment(overallBand),
+            criteriaFeedback: this.generateCriteriaFeedback(bandScores, analysis, topicRelevance),
+            keyRecommendations: this.generateKeyRecommendations(bandScores, analysis),
+            nextSteps: this.getNextSteps(overallBand)
         };
-        
-        return feedback;
     }
 
-    getGeneralFeedback(scores) {
-        const avgScore = (scores.taskAchievement + scores.coherenceCohesion + 
-                         scores.lexicalResource + scores.grammaticalAccuracy) / 4;
+    getOverallBandComment(band) {
+        if (band >= 8.0) return `**Overall Band: ${this.formatBand(band)}** - Excelente nivel. Listo para examen oficial.`;
+        else if (band >= 7.0) return `**Overall Band: ${this.formatBand(band)}** - Buen nivel competente. Cerca del objetivo.`;
+        else if (band >= 6.0) return `**Overall Band: ${this.formatBand(band)}** - Nivel competente con áreas de mejora específicas.`;
+        else if (band >= 5.0) return `**Overall Band: ${this.formatBand(band)}** - Nivel moderado. Requiere práctica en criterios clave.`;
+        else if (band >= 4.0) return `**Overall Band: ${this.formatBand(band)}** - Nivel limitado. Enfócate en fundamentos.`;
+        else return `**Overall Band: ${this.formatBand(band)}** - Requiere trabajo significativo en todos los aspectos.`;
+    }
+
+    generateCriteriaFeedback(bandScores, analysis, topicRelevance) {
+        const feedback = {};
         
-        if (avgScore >= 4.0) {
-            return "Excelente ensayo con estructura sólida y vocabulario apropiado.";
-        } else if (avgScore >= 3.0) {
-            return "Buen ensayo que cumple con los requisitos básicos.";
-        } else if (avgScore >= 2.0) {
-            return "El ensayo necesita mejoras en estructura y desarrollo.";
+        // Task Achievement
+        const taBand = bandScores.taskAchievement;
+        if (taBand >= 7.0) {
+            feedback.taskAchievement = `✓ **Band ${this.formatBand(taBand)}**: Respuesta completa y bien desarrollada`;
+        } else if (taBand >= 6.0) {
+            feedback.taskAchievement = `⚠ **Band ${this.formatBand(taBand)}**: Aborda la tarea pero necesita más desarrollo`;
         } else {
-            return "El ensayo requiere trabajo significativo en todos los aspectos.";
-        }
-    }
-
-    identifyEnhancedStrengths(scores, analysis, topicRelevance) {
-        const strengths = [];
-        
-        // Fortalezas existentes
-        if (scores.taskAchievement >= 3.5) {
-            strengths.push("Buena estructura general del ensayo");
-        }
-        if (scores.coherenceCohesion >= 3.5) {
-            strengths.push("Uso adecuado de conectores");
-        }
-        if (scores.lexicalResource >= 3.5) {
-            strengths.push("Vocabulario variado");
-        }
-        if (scores.grammaticalAccuracy >= 3.5) {
-            strengths.push("Estructuras gramaticales apropiadas");
-        }
-        
-        if (analysis.wordAnalysis.totalWords >= 250) {
-            strengths.push("Longitud apropiada del ensayo");
-        }
-        
-        // NUEVAS: Fortalezas relacionadas con el tema
-        if (topicRelevance) {
-            if (topicRelevance.topicFocus === 'High') {
-                strengths.push("Excelente enfoque en el tema principal");
-            }
-            if (topicRelevance.keywordRatio >= 40) {
-                strengths.push("Buen uso de vocabulario específico del tema");
-            }
-            if (topicRelevance.taskTypeAlignment === 'Strong') {
-                strengths.push("Responde correctamente al tipo de pregunta");
-            }
-        }
-        
-        return strengths.length > 0 ? strengths : ["El ensayo muestra esfuerzo en su desarrollo"];
-    }
-
-    identifyEnhancedImprovements(scores, analysis, topicRelevance) {
-        const improvements = [];
-        
-        // Mejoras existentes
-        if (scores.taskAchievement < 3.0) {
-            improvements.push("Desarrollar mejor la estructura del ensayo");
-        }
-        if (scores.coherenceCohesion < 3.0) {
-            improvements.push("Usar más conectores para unir ideas");
-        }
-        if (scores.lexicalResource < 3.0) {
-            improvements.push("Ampliar el vocabulario usado");
-        }
-        if (scores.grammaticalAccuracy < 3.0) {
-            improvements.push("Revisar estructuras gramaticales");
+            feedback.taskAchievement = `✗ **Band ${this.formatBand(taBand)}**: Respuesta limitada o irrelevante`;
         }
         
         if (analysis.wordAnalysis.totalWords < 250) {
-            improvements.push("Aumentar la longitud del ensayo");
+            feedback.taskAchievement += `\n✗ Menos de 250 palabras (-1 banda penalización)`;
         }
         
-        // NUEVAS: Mejoras relacionadas con el tema
-        if (topicRelevance) {
-            if (topicRelevance.topicFocus === 'Low') {
-                improvements.push("Enfocar más el ensayo en el tema principal");
-            }
-            if (topicRelevance.keywordRatio < 20) {
-                improvements.push("Usar más vocabulario específico del tema");
-            }
-            if (topicRelevance.taskTypeAlignment === 'Poor' || topicRelevance.taskTypeAlignment === 'Weak') {
-                improvements.push("Responder directamente al tipo de pregunta planteada");
-            }
+        if (topicRelevance && topicRelevance.topicFocus === 'Low') {
+            feedback.taskAchievement += `\n✗ Falta enfoque en el tema principal`;
+        }
+
+        // Coherence & Cohesion
+        const ccBand = bandScores.coherenceCohesion;
+        if (ccBand >= 7.0) {
+            feedback.coherenceCohesion = `✓ **Band ${this.formatBand(ccBand)}**: Organización clara con conectores efectivos`;
+        } else if (ccBand >= 6.0) {
+            feedback.coherenceCohesion = `⚠ **Band ${this.formatBand(ccBand)}**: Organización presente, mejora conectores`;
+        } else {
+            feedback.coherenceCohesion = `✗ **Band ${this.formatBand(ccBand)}**: Organización confusa, conectores limitados`;
         }
         
-        return improvements.length > 0 ? improvements : ["Continuar practicando la escritura académica"];
+        const coherence = analysis.coherenceAnalysis;
+        const totalConnectors = coherence.contrastConnectors + coherence.additionConnectors + 
+                               coherence.causeEffectConnectors + coherence.exampleConnectors;
+        
+        if (totalConnectors < 3) {
+            feedback.coherenceCohesion += `\n✗ Usa más conectores (*However*, *Furthermore*, *Therefore*)`;
+        }
+
+        // Lexical Resource
+        const lrBand = bandScores.lexicalResource;
+        if (lrBand >= 7.0) {
+            feedback.lexicalResource = `✓ **Band ${this.formatBand(lrBand)}**: Vocabulario amplio y preciso`;
+        } else if (lrBand >= 6.0) {
+            feedback.lexicalResource = `⚠ **Band ${this.formatBand(lrBand)}**: Vocabulario adecuado, intenta términos más académicos`;
+        } else {
+            feedback.lexicalResource = `✗ **Band ${this.formatBand(lrBand)}**: Vocabulario limitado y repetitivo`;
+        }
+        
+        if (analysis.vocabularyAnalysis.weakVocabulary >= 3) {
+            feedback.lexicalResource += `\n✗ Evita palabras básicas → Usa términos académicos`;
+        }
+        
+        if (analysis.vocabularyAnalysis.wordRepetition >= 5) {
+            feedback.lexicalResource += `\n✗ Reduce repetición → Usar sinónimos (challenge/issue/dilemma)`;
+        }
+
+        // Grammatical Range & Accuracy
+        const grBand = bandScores.grammaticalAccuracy;
+        if (grBand >= 7.0) {
+            feedback.grammaticalAccuracy = `✓ **Band ${this.formatBand(grBand)}**: Buen rango de estructuras complejas`;
+        } else if (grBand >= 6.0) {
+            feedback.grammaticalAccuracy = `⚠ **Band ${this.formatBand(grBand)}**: Mezcla estructuras, errores ocasionales`;
+        } else {
+            feedback.grammaticalAccuracy = `✗ **Band ${this.formatBand(grBand)}**: Estructuras limitadas, errores frecuentes`;
+        }
+        
+        const grammar = analysis.grammarAnalysis;
+        if (grammar.passiveVoice < 2) {
+            feedback.grammaticalAccuracy += `\n✗ Practica voz pasiva (*benefits **are threatened***)`; 
+        }
+        
+        if (grammar.conditionalStructures < 1) {
+            feedback.grammaticalAccuracy += `\n✗ Incluye condicionales (*If governments **invested**...*)`;
+        }
+
+        return feedback;
+    }
+
+    generateKeyRecommendations(bandScores, analysis) {
+        const recommendations = [];
+        
+        // Encontrar el criterio más débil
+        const minCriterion = Object.keys(bandScores).reduce((a, b) => 
+            bandScores[a] < bandScores[b] ? a : b);
+        
+        const minBand = bandScores[minCriterion];
+        
+        if (minCriterion === 'taskAchievement' && minBand < 6.0) {
+            recommendations.push("📝 **Prioridad 1**: Responder directamente todas las partes de la pregunta");
+            recommendations.push("🎯 Incluir ejemplos específicos para cada argumento principal");
+        }
+        
+        if (minCriterion === 'coherenceCohesion' && minBand < 6.0) {
+            recommendations.push("🔗 **Prioridad 1**: Usar conectores académicos variados (*However*, *Furthermore*, *Consequently*)");
+            recommendations.push("📐 Estructurar párrafos con una idea central clara");
+        }
+        
+        if (minCriterion === 'lexicalResource' && minBand < 6.0) {
+            recommendations.push("📚 **Prioridad 1**: Reemplazar vocabulario básico por términos académicos");
+            recommendations.push("🔄 Evitar repetición excesiva de palabras clave");
+        }
+        
+        if (minCriterion === 'grammaticalAccuracy' && minBand < 6.0) {
+            recommendations.push("⚙️ **Prioridad 1**: Practicar estructuras complejas (condicionales, pasivas)");
+            recommendations.push("✏️ Revisar concordancia sujeto-verbo antes de enviar");
+        }
+        
+        // Recomendación general de longitud
+        if (analysis.wordAnalysis.totalWords < 280) {
+            recommendations.push("📏 Objetivo: 280-320 palabras para desarrollo completo");
+        }
+        
+        return recommendations;
+    }
+
+    getNextSteps(band) {
+        if (band >= 7.5) {
+            return [
+                "🎯 Mantener este excelente nivel con práctica regular",
+                "📚 Enfocarse en pulir detalles menores",
+                "✅ Listo para tomar el examen oficial IELTS"
+            ];
+        } else if (band >= 6.5) {
+            return [
+                "📈 Muy cerca del objetivo. Continuar con práctica específica",
+                "🔍 Pulir el criterio más débil identificado arriba",
+                "⏰ Practicar escritura bajo presión de tiempo"
+            ];
+        } else if (band >= 5.5) {
+            return [
+                "📚 Estudiar descriptores de banda IELTS específicos",
+                "💪 Enfocarse en los 2 criterios más débiles",
+                "📝 Practicar diferentes tipos de ensayos Task 2"
+            ];
+        } else {
+            return [
+                "🔤 Revisar gramática y vocabulario fundamental",
+                "📖 Leer ensayos modelo de banda 6-7",
+                "⌚ Considerear curso preparatorio IELTS"
+            ];
+        }
     }
 
     getBasicEvaluation(essayText) {
@@ -482,55 +636,27 @@ class IELTSEvaluator {
         
         return {
             score: 2.0,
+            band: "2.0",
             wordCount,
             detailedScores: {
-                taskAchievement: 2.0,
-                coherenceCohesion: 2.0,
-                lexicalResource: 2.0,
-                grammaticalAccuracy: 2.0
+                taskAchievement: "2.0",
+                coherenceCohesion: "2.0",
+                lexicalResource: "2.0",
+                grammaticalAccuracy: "2.0"
             },
             feedback: {
                 general: "Error en el análisis. Puntuación básica asignada.",
-                strengths: ["Ensayo enviado para evaluación"],
-                improvements: ["Revisar contenido y estructura"]
+                criteriaFeedback: {
+                    taskAchievement: "Error en evaluación",
+                    coherenceCohesion: "Error en evaluación", 
+                    lexicalResource: "Error en evaluación",
+                    grammaticalAccuracy: "Error en evaluación"
+                },
+                keyRecommendations: ["Revisar contenido y estructura"],
+                nextSteps: ["Intentar nuevamente"]
             },
             evaluatedAt: new Date().toISOString()
         };
-    }
-
-    getTopicSpecificFeedback(topicRelevance) {
-        if (!topicRelevance) return null;
-        
-        return {
-            relevanceLevel: topicRelevance.topicFocus,
-            keywordsUsed: topicRelevance.keywordsFound.length,
-            keywordsPercentage: topicRelevance.keywordRatio,
-            conceptsCovered: topicRelevance.conceptsCovered.length,
-            taskAlignment: topicRelevance.taskTypeAlignment,
-            suggestions: this.generateTopicSuggestions(topicRelevance)
-        };
-    }
-
-    generateTopicSuggestions(topicRelevance) {
-        const suggestions = [];
-        
-        if (topicRelevance.keywordRatio < 30) {
-            suggestions.push("Incluir más palabras clave relacionadas con el tema");
-        }
-        
-        if (topicRelevance.conceptsCovered.length < 2) {
-            suggestions.push("Desarrollar más conceptos relacionados con el tema");
-        }
-        
-        if (topicRelevance.taskTypeAlignment === 'Poor') {
-            suggestions.push("Asegurar que el ensayo responda al tipo específico de pregunta");
-        }
-        
-        if (topicRelevance.topicFocus === 'Low') {
-            suggestions.push("Mantener el enfoque en el tema central durante todo el ensayo");
-        }
-        
-        return suggestions;
     }
 }
 
